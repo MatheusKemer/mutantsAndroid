@@ -2,6 +2,7 @@ package com.example.mutantsvolley;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +23,7 @@ import org.json.JSONObject;
 public class MutantForm extends AppCompatActivity {
     private static final String TAG = "MutantForm";
     EditText mutantName, mutantSkill1, mutantSkill2, mutantSkill3;
-    Button actionButton;
+    Button actionButton, deleteButton;
     ProgressDialog progressDialog;
 
     @Override
@@ -37,6 +38,18 @@ public class MutantForm extends AppCompatActivity {
         mutantSkill2 = findViewById(R.id.skill2);
         mutantSkill3 = findViewById(R.id.skill3);
         actionButton = findViewById(R.id.actionButton);
+        deleteButton = findViewById(R.id.deleteButton);
+
+        Intent it = getIntent();
+        Boolean isEditing = it.getBooleanExtra("isEditing", false);
+
+        if (isEditing == true){
+            mutantName.setText(it.getStringExtra("mutantName").toString());
+            mutantSkill1.setText(it.getStringExtra("mutantPower1").toString());
+            mutantSkill2.setText(it.getStringExtra("mutantPower2").toString());
+            mutantSkill3.setText(it.getStringExtra("mutantPower3").toString());
+            deleteButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void saveMutant(View view){
@@ -50,7 +63,22 @@ public class MutantForm extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        createMutantRequest(mutant);
+        Intent it = getIntent();
+        Boolean isEditing = it.getBooleanExtra("isEditing", false);
+
+        if (isEditing == true){
+            updateMutantRequest(mutant);
+        } else {
+            createMutantRequest(mutant);
+        }
+    }
+
+    public void deleteMutant(View view){
+        Intent it = getIntent();
+        String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
+
+        deleteMutantRequest(mutantId);
+
     }
 
     public void displayFinishAlert(String title, String description, String button){
@@ -93,6 +121,79 @@ public class MutantForm extends AppCompatActivity {
 
                             if (responseStatus == 200) {
                                 displayFinishAlert("Sucesso", "Mutante criado com sucesso!", "Finalizar");
+                            } else {
+                                displayAlert("Erro!", response.getString("erro"), "Entendi!");
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                progressDialog.hide();
+            }
+        });
+
+        // Adding JsonObject request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectReq,REQUEST_TAG);
+    }
+
+    public void updateMutantRequest(JSONObject params){
+        String  REQUEST_TAG = "updatingMutantTag";
+        progressDialog.setMessage("Salvando...");
+        progressDialog.show();
+        Intent it = getIntent();
+        String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.PUT, MainActivity.GENERAL_MUTANT_URL  + mutantId, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, response.toString());
+                        progressDialog.hide();
+
+                        try {
+                            int responseStatus = Integer.valueOf(response.getString("code"));
+
+                            if (responseStatus == 200) {
+                                displayFinishAlert("Sucesso", "Mutante aualizado com sucesso!", "Finalizar");
+                            } else {
+                                displayAlert("Erro!", response.getString("erro"), "Entendi!");
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                progressDialog.hide();
+            }
+        });
+
+        // Adding JsonObject request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectReq,REQUEST_TAG);
+    }
+
+    public void deleteMutantRequest(String mutantId){
+        String  REQUEST_TAG = "deleteMutantTag";
+        progressDialog.setMessage("Excluindo...");
+        progressDialog.show();
+
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.DELETE, MainActivity.GENERAL_MUTANT_URL  + mutantId, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, response.toString());
+                        progressDialog.hide();
+
+                        try {
+                            int responseStatus = Integer.valueOf(response.getString("code"));
+
+                            if (responseStatus == 200) {
+                                displayFinishAlert("Sucesso", "Mutante deletado com sucesso!", "Finalizar");
                             } else {
                                 displayAlert("Erro!", response.getString("erro"), "Entendi!");
                             }
