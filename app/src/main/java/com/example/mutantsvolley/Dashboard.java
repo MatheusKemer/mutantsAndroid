@@ -29,7 +29,11 @@ public class Dashboard extends AppCompatActivity {
         Intent intent = new Intent(this, ListMutants.class);
         startActivity(intent);
     }
-    public void searchMutants(View view){}
+    public void searchMutants(View view){
+        Intent intent = new Intent(this, ListMutants.class);
+        intent.putExtra("isSearch", true);
+        startActivity(intent);
+    }
 
     public void exit(View view){
         finishAffinity();

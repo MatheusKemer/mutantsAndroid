@@ -29,10 +29,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String LOGIN_URL = "https://62e14167.ngrok.io/login";
-    public static final String CREATE_MUTANT_URL = "https://62e14167.ngrok.io/mutants";
-    public static final String GENERAL_MUTANT_URL = "https://62e14167.ngrok.io/mutants/";
-    public static final String LIST_MUTANTS_URL = "https://62e14167.ngrok.io/mutants";
+    private static final String BASE_URL = "https://62e14167.ngrok.io";
+    private static final String LOGIN_URL = BASE_URL + "/login";
+    public static final String GENERAL_MUTANT_URL = BASE_URL + "/mutants/";
     public static String userId;
 
     ProgressDialog progressDialog;

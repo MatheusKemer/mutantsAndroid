@@ -112,7 +112,7 @@ public class MutantForm extends AppCompatActivity {
         progressDialog.setMessage("Salvando...");
         progressDialog.show();
 
-        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.POST, MainActivity.CREATE_MUTANT_URL, params,
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

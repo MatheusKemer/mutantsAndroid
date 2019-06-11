@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -28,6 +30,7 @@ public class ListMutants extends AppCompatActivity {
     public JSONArray mutantsArray;
     ListView list;
     ProgressDialog progressDialog;
+    LinearLayout searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,16 @@ public class ListMutants extends AppCompatActivity {
         mutants.clear();
         mutantsArray = new JSONArray();
         progressDialog = new ProgressDialog(this);
+        searchBar = findViewById(R.id.searchBar);
 
-        getMutants();
+        Intent it = getIntent();
+        Boolean isEditing = it.getBooleanExtra("isSearch", false);
+
+        if (isEditing == true){
+            searchBar.setVisibility(View.VISIBLE);
+        } else {
+            getMutants();
+        }
     }
 
     public void populateTable(){
@@ -84,7 +95,7 @@ public class ListMutants extends AppCompatActivity {
         progressDialog.setMessage("Carregando mutantes...");
         progressDialog.show();
 
-         final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(MainActivity.LIST_MUTANTS_URL,
+         final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(MainActivity.GENERAL_MUTANT_URL,
                  new Response.Listener<JSONArray>() {
                      @Override
                      public void onResponse(JSONArray response) {
