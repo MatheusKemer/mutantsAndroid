@@ -1,8 +1,10 @@
 package com.example.mutantsvolley;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -59,6 +61,7 @@ public class MutantForm extends AppCompatActivity {
             mutant.put("power1", mutantSkill1.getText().toString());
             mutant.put("power2", mutantSkill2.getText().toString());
             mutant.put("power3", mutantSkill3.getText().toString());
+            mutant.put("user_id", MainActivity.userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }

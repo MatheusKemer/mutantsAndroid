@@ -1,8 +1,11 @@
 package com.example.mutantsvolley;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String CREATE_MUTANT_URL = "https://62e14167.ngrok.io/mutants";
     public static final String GENERAL_MUTANT_URL = "https://62e14167.ngrok.io/mutants/";
     public static final String LIST_MUTANTS_URL = "https://62e14167.ngrok.io/mutants";
+    public static String userId;
 
     ProgressDialog progressDialog;
     private static final String TAG = "MainActivity";
@@ -71,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 }).show();
     }
 
-    private void goToDashboard(){
+    private void goToDashboard(String userId){
+        MainActivity.userId = userId;
+
         Intent intent = new Intent(this, Dashboard.class);
         startActivity(intent);
     }
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                             if (responseStatus == 200) {
                                 displayAlert("Logado com sucesso!", "Bem vindo, " + response.getString("username"),
                                         "Continuar");
-                                goToDashboard();
+                                goToDashboard(response.getString("id"));
                             } else {
                                 displayAlert("Erro no login", "Usuário ou senha incorretos",
                                         "Tentar Novamente");

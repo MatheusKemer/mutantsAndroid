@@ -1,5 +1,6 @@
 package com.example.mutantsvolley;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,5 +30,8 @@ public class Dashboard extends AppCompatActivity {
         startActivity(intent);
     }
     public void searchMutants(View view){}
-    public void exit(View view){}
+
+    public void exit(View view){
+        finishAffinity();
+    }
 }

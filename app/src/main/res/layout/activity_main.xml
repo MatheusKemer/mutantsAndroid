@@ -7,24 +7,52 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70sp"
+        android:layout_marginRight="70sp"
+        android:text="Login"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
     <EditText
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="70sp"
+        android:layout_marginRight="70sp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70sp"
+        android:layout_marginRight="70sp"
+        android:text="Senha"
+        android:textAlignment="center"
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="70sp"
+        android:layout_marginRight="70sp"
         android:ems="10"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_marginLeft="100sp"
+        android:layout_marginTop="30sp"
+        android:layout_marginRight="100sp"
+        android:background="#4CAF50"
+        android:text="Realizar Login"
+        android:textColor="#FFFFFF" />
 </LinearLayout>
