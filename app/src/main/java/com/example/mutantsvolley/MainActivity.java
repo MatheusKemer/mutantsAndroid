@@ -1,16 +1,12 @@
 package com.example.mutantsvolley;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,16 +16,13 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String BASE_URL = "https://62e14167.ngrok.io";
+    public static final String BASE_URL = "https://30d108f9.ngrok.io";
     private static final String LOGIN_URL = BASE_URL + "/login";
     public static final String GENERAL_MUTANT_URL = BASE_URL + "/mutants/";
     public static String userId;
@@ -47,9 +40,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setTitle("Mutantes App");
+
         progressDialog = new ProgressDialog(this);
 
-        usernameValue = findViewById(R.id.username);
+        usernameValue = findViewById(R.id.usernameField);
         passwordValue = findViewById(R.id.password);
         loginButton = (Button)findViewById(R.id.loginButton);
 
@@ -63,13 +58,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void displayAlert(String title, String description, String button){
+    public void displayAlert(String title, String description, String button, final String userId){
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(description)
                 .setPositiveButton(button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        goToDashboard(userId);
                     }
                 }).show();
     }
@@ -96,11 +92,10 @@ public class MainActivity extends AppCompatActivity {
                             int responseStatus = Integer.valueOf(response.getString("code"));
                             if (responseStatus == 200) {
                                 displayAlert("Logado com sucesso!", "Bem vindo, " + response.getString("username"),
-                                        "Continuar");
-                                goToDashboard(response.getString("id"));
+                                        "Continuar", response.getString("id"));
                             } else {
                                 displayAlert("Erro no login", "Usuário ou senha incorretos",
-                                        "Tentar Novamente");
+                                        "Tentar Novamente", "");
                             }
                         } catch (JSONException e){
                             e.printStackTrace();
@@ -111,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
                 progressDialog.hide();
+                displayAlert("Erro no login", "Erro de conexão com o servidor.",
+                        "Tentar Novamente", "");
             }
         });
 

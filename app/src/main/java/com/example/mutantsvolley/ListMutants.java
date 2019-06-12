@@ -36,6 +36,7 @@ public class ListMutants extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_mutants);
+        setTitle("Mutantes");
     }
 
     @Override
@@ -44,12 +45,12 @@ public class ListMutants extends AppCompatActivity {
         mutants.clear();
         mutantsArray = new JSONArray();
         progressDialog = new ProgressDialog(this);
-        searchBar = findViewById(R.id.searchBar);
+        //searchBar = findViewById(R.id.searchBar);
 
         Intent it = getIntent();
-        Boolean isEditing = it.getBooleanExtra("isSearch", false);
+        Boolean isSearch = it.getBooleanExtra("isSearch", false);
 
-        if (isEditing == true){
+        if (isSearch == true){
             searchBar.setVisibility(View.VISIBLE);
         } else {
             getMutants();
@@ -81,6 +82,7 @@ public class ListMutants extends AppCompatActivity {
                     it.putExtra("mutantPower1", mutant.getString("power1").toString());
                     it.putExtra("mutantPower2", mutant.getString("power2").toString());
                     it.putExtra("mutantPower3", mutant.getString("power3").toString());
+                    it.putExtra("userName", mutant.getString("username").toString());
                     it.putExtra("mutantId", mutant.getInt("id"));
                     startActivity(it);
                 } catch (JSONException e){

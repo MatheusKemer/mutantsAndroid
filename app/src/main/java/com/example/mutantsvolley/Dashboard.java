@@ -14,7 +14,7 @@ public class Dashboard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-
+        setTitle("Mutante Dashboard");
         createMutant = findViewById(R.id.create);
         listMutants = findViewById(R.id.list);
         searchMutants = findViewById(R.id.search);
@@ -30,8 +30,8 @@ public class Dashboard extends AppCompatActivity {
         startActivity(intent);
     }
     public void searchMutants(View view){
-        Intent intent = new Intent(this, ListMutants.class);
-        intent.putExtra("isSearch", true);
+        Intent intent = new Intent(this, SearchMutants.class);
+        //intent.putExtra("isSearch", true);
         startActivity(intent);
     }
 
