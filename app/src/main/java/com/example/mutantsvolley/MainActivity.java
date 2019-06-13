@@ -65,6 +65,17 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
+    }
+
+    public void displaySuccessAlert(String title, String description, String button, final String userId){
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(description)
+                .setPositiveButton(button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
                         goToDashboard(userId);
                     }
                 }).show();
@@ -91,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
                             if (responseStatus == 200) {
-                                displayAlert("Logado com sucesso!", "Bem vindo, " + response.getString("username"),
+                                displaySuccessAlert("Logado com sucesso!", "Bem vindo, " + response.getString("username"),
                                         "Continuar", response.getString("id"));
                             } else {
                                 displayAlert("Erro no login", "Usuário ou senha incorretos",

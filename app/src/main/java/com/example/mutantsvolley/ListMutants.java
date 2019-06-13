@@ -1,8 +1,10 @@
 package com.example.mutantsvolley;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -92,6 +94,17 @@ public class ListMutants extends AppCompatActivity {
         });
     }
 
+    public void displayAlert(String title, String description, String button){
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(description)
+                .setPositiveButton(button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
+    }
+
     public void getMutants(){
         final String  REQUEST_TAG = "listMutants";
         progressDialog.setMessage("Carregando mutantes...");
@@ -109,6 +122,7 @@ public class ListMutants extends AppCompatActivity {
                  }, new Response.ErrorListener() {
                 public void onErrorResponse(VolleyError error){
                     VolleyLog.d("listMutants", "Error: " + error.getMessage());
+                    displayAlert("Erro!", "Não foi possível conectar ao servidor!", "Entendi!");
                     progressDialog.hide();
                 }
          });

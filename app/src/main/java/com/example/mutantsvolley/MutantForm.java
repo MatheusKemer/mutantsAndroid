@@ -141,6 +141,7 @@ public class MutantForm extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
+                displayAlert("Erro!", "Não foi possível conectar ao servidor!", "Entendi!");
                 progressDialog.hide();
             }
         });
