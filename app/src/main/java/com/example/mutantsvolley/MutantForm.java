@@ -1,32 +1,62 @@
 package com.example.mutantsvolley;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MutantForm extends AppCompatActivity {
     private static final String TAG = "MutantForm";
     EditText mutantName, mutantSkill1, mutantSkill2, mutantSkill3;
     TextView userName;
-    Button actionButton, deleteButton;
+    Button actionButton, deleteButton, btpic;
     ProgressDialog progressDialog;
+    private Uri fileUri;
+    Uri selectedImage;
+    Bitmap photo;
+    File file;
+    Bitmap bitmap;
+    String filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +73,14 @@ public class MutantForm extends AppCompatActivity {
         deleteButton = findViewById(R.id.deleteButton);
         userName = findViewById(R.id.usernameField);
 
+        btpic = findViewById(R.id.cpic);
+        btpic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickpic();
+            }
+        });
+
         Intent it = getIntent();
         Boolean isEditing = it.getBooleanExtra("isEditing", false);
 
@@ -58,6 +96,32 @@ public class MutantForm extends AppCompatActivity {
         } else {
             setTitle("Novo Mutante");
         }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
     }
 
     public void saveMutant(View view){
@@ -68,6 +132,15 @@ public class MutantForm extends AppCompatActivity {
             mutant.put("power2", mutantSkill2.getText().toString());
             mutant.put("power3", mutantSkill3.getText().toString());
             mutant.put("user_id", MainActivity.userId);
+
+            if (file.exists() && file.length() > 0) {
+                try {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    mutant.put("picture", myBitmap);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -78,7 +151,8 @@ public class MutantForm extends AppCompatActivity {
         if (isEditing == true){
             updateMutantRequest(mutant);
         } else {
-            createMutantRequest(mutant);
+            //createMutantRequest(mutant);
+            uploadBitmap(bitmap);
         }
     }
 
@@ -221,5 +295,127 @@ public class MutantForm extends AppCompatActivity {
 
         // Adding JsonObject request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectReq,REQUEST_TAG);
+    }
+
+    private void clickpic() {
+        // Check Camera
+        if (getApplicationContext().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA)) {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, 1);
+        } else {
+            Toast.makeText(getApplication(), "Camera not supported", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1)
+            if (resultCode == Activity.RESULT_OK) {
+                Uri selectedImage = data.getData();
+
+                filePath = getPath(selectedImage);
+                String file_extn = filePath.substring(filePath.lastIndexOf(".") + 1);
+
+                try {
+                    if (file_extn.equals("img") || file_extn.equals("jpg") || file_extn.equals("jpeg") || file_extn.equals("gif") || file_extn.equals("png")) {
+                        Log.d("imageUpload", "DEU BOA O UPLOAD");
+                        if (filePath != null) {
+                            file = new File(filePath);
+                            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                        }
+                    } else {
+                        VolleyLog.d("imageUpload", "Erro no upload");
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String imagePath = cursor.getString(column_index);
+
+        return cursor.getString(column_index);
+    }
+
+    public byte[] getFileDataFromDrawable(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private void uploadBitmap(final Bitmap bitmap) {
+        progressDialog.setMessage("Salvando Mutante...");
+        progressDialog.show();
+        //our custom volley request
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        try {
+                            progressDialog.hide();
+
+                            String obj = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                            JSONObject json = new JSONObject(obj);
+                            int responseStatus = Integer.valueOf(json.getString("code"));
+
+                            if (responseStatus == 200) {
+                                displayFinishAlert("Sucesso", "Mutante criado com sucesso!", "Finalizar");
+                            } else {
+                                displayAlert("Erro!", json.getString("erro"), "Entendi!");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        displayAlert("Erro!", "Erro de conexão com servidor.", "Entendi!");
+                        progressDialog.hide();
+                    }
+                }) {
+
+            /*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * */
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> mutant = new HashMap<>();
+                mutant.put("name", mutantName.getText().toString());
+                mutant.put("power1", mutantSkill1.getText().toString());
+                mutant.put("power2", mutantSkill2.getText().toString());
+                mutant.put("power3", mutantSkill3.getText().toString());
+                mutant.put("user_id", MainActivity.userId);
+                return mutant;
+            }
+
+            /*
+             * Here we are passing image by renaming it with a unique name
+             * */
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                params.put("picture", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        Volley.newRequestQueue(this).add(volleyMultipartRequest);
     }
 }
