@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/splash_image"
         android:layout_gravity="center"
         android:contentDescription="Imagem da splash screen"/>
 
