@@ -22,12 +22,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String BASE_URL = "https://30d108f9.ngrok.io";
+    public static final String BASE_URL = "https://905d1ed5.ngrok.io";
     private static final String LOGIN_URL = BASE_URL + "/login";
     public static final String GENERAL_MUTANT_URL = BASE_URL + "/mutants/";
     public static String userId;
 
-    ProgressDialog progressDialog;
+    ProgressDialog progressDialogForLogin;
     private static final String TAG = "MainActivity";
     private Button loginButton;
     private View showDialogView;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle("Mutantes App");
 
-        progressDialog = new ProgressDialog(this);
+        progressDialogForLogin = new ProgressDialog(this);
 
         usernameValue = findViewById(R.id.usernameField);
         passwordValue = findViewById(R.id.password);
@@ -86,19 +86,21 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, Dashboard.class);
         startActivity(intent);
+
+        finish();
     }
 
     public void doLoginRequest(String url){
         String  REQUEST_TAG = "loginRequest";
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
+        progressDialogForLogin.setMessage("Loading...");
+        progressDialogForLogin.show();
 
         JsonObjectRequest jsonObjectReq = new JsonObjectRequest(url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialog.hide();
+                        progressDialogForLogin.hide();
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
                             if (responseStatus == 200) {
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                progressDialog.hide();
+                progressDialogForLogin.hide();
                 displayAlert("Erro no login", "Erro de conexão com o servidor.",
                         "Tentar Novamente", "");
             }

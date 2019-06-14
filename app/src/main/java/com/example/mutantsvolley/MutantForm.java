@@ -50,7 +50,7 @@ public class MutantForm extends AppCompatActivity {
     EditText mutantName, mutantSkill1, mutantSkill2, mutantSkill3;
     TextView userName;
     Button actionButton, deleteButton, btpic;
-    ProgressDialog progressDialog;
+    ProgressDialog progressDialogForForm;
     private Uri fileUri;
     Uri selectedImage;
     Bitmap photo;
@@ -63,7 +63,7 @@ public class MutantForm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mutant_form);
 
-        progressDialog = new ProgressDialog(this);
+        progressDialogForForm = new ProgressDialog(this);
 
         mutantName = findViewById(R.id.name);
         mutantSkill1 = findViewById(R.id.skill1);
@@ -132,15 +132,6 @@ public class MutantForm extends AppCompatActivity {
             mutant.put("power2", mutantSkill2.getText().toString());
             mutant.put("power3", mutantSkill3.getText().toString());
             mutant.put("user_id", MainActivity.userId);
-
-            if (file.exists() && file.length() > 0) {
-                try {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    mutant.put("picture", myBitmap);
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -149,7 +140,8 @@ public class MutantForm extends AppCompatActivity {
         Boolean isEditing = it.getBooleanExtra("isEditing", false);
 
         if (isEditing == true){
-            updateMutantRequest(mutant);
+            //updateMutantRequest(mutant);
+            uploadBitmapInUpdate(bitmap, mutant);
         } else {
             //createMutantRequest(mutant);
             uploadBitmap(bitmap);
@@ -189,15 +181,15 @@ public class MutantForm extends AppCompatActivity {
 
     public void createMutantRequest(JSONObject params){
         String  REQUEST_TAG = "createMutantTag";
-        progressDialog.setMessage("Salvando...");
-        progressDialog.show();
+        progressDialogForForm.setMessage("Salvando...");
+        progressDialogForForm.show();
 
         JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialog.hide();
+                        progressDialogForForm.dismiss();
 
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
@@ -216,7 +208,7 @@ public class MutantForm extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
                 displayAlert("Erro!", "Não foi possível conectar ao servidor!", "Entendi!");
-                progressDialog.hide();
+                progressDialogForForm.dismiss();
             }
         });
 
@@ -226,8 +218,8 @@ public class MutantForm extends AppCompatActivity {
 
     public void updateMutantRequest(JSONObject params){
         String  REQUEST_TAG = "updatingMutantTag";
-        progressDialog.setMessage("Salvando...");
-        progressDialog.show();
+        progressDialogForForm.setMessage("Salvando...");
+        progressDialogForForm.show();
         Intent it = getIntent();
         String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
         JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.PUT, MainActivity.GENERAL_MUTANT_URL  + mutantId, params,
@@ -235,7 +227,7 @@ public class MutantForm extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialog.hide();
+                        progressDialogForForm.hide();
 
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
@@ -253,7 +245,7 @@ public class MutantForm extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                progressDialog.hide();
+                progressDialogForForm.dismiss();
             }
         });
 
@@ -263,15 +255,15 @@ public class MutantForm extends AppCompatActivity {
 
     public void deleteMutantRequest(String mutantId){
         String  REQUEST_TAG = "deleteMutantTag";
-        progressDialog.setMessage("Excluindo...");
-        progressDialog.show();
+        progressDialogForForm.setMessage("Excluindo...");
+        progressDialogForForm.show();
 
         JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.DELETE, MainActivity.GENERAL_MUTANT_URL  + mutantId, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialog.hide();
+                        progressDialogForForm.dismiss();
 
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
@@ -289,7 +281,7 @@ public class MutantForm extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                progressDialog.hide();
+                progressDialogForForm.dismiss();
             }
         });
 
@@ -354,15 +346,16 @@ public class MutantForm extends AppCompatActivity {
     }
 
     private void uploadBitmap(final Bitmap bitmap) {
-        progressDialog.setMessage("Salvando Mutante...");
-        progressDialog.show();
+        progressDialogForForm = new ProgressDialog(this);
+        progressDialogForForm.setMessage("Salvando Mutante...");
+        progressDialogForForm.show();
         //our custom volley request
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
                         try {
-                            progressDialog.hide();
+                            progressDialogForForm.dismiss();
 
                             String obj = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
                             JSONObject json = new JSONObject(obj);
@@ -382,7 +375,7 @@ public class MutantForm extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         displayAlert("Erro!", "Erro de conexão com servidor.", "Entendi!");
-                        progressDialog.hide();
+                        progressDialogForForm.dismiss();
                     }
                 }) {
 
@@ -410,7 +403,84 @@ public class MutantForm extends AppCompatActivity {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
                 long imagename = System.currentTimeMillis();
-                params.put("picture", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                try {
+                    params.put("picture", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        Volley.newRequestQueue(this).add(volleyMultipartRequest);
+    }
+
+    private void uploadBitmapInUpdate(final Bitmap bitmap, JSONObject mutant ) {
+        progressDialogForForm = new ProgressDialog(this);
+        progressDialogForForm.setMessage("Salvando Mutante...");
+        progressDialogForForm.show();
+
+        Intent it = getIntent();
+        String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.PUT, MainActivity.GENERAL_MUTANT_URL  + mutantId,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        try {
+                            progressDialogForForm.dismiss();
+
+                            String obj = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                            JSONObject json = new JSONObject(obj);
+                            int responseStatus = Integer.valueOf(json.getString("code"));
+
+                            if (responseStatus == 200) {
+                                displayFinishAlert("Sucesso", "Mutante atualzado com sucesso!", "Finalizar");
+                            } else {
+                                displayAlert("Erro!", json.getString("erro"), "Entendi!");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        displayAlert("Erro!", "Erro de conexão com servidor.", "Entendi!");
+                        progressDialogForForm.dismiss();
+                    }
+                }) {
+
+            /*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * */
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> mutant = new HashMap<>();
+                mutant.put("name", mutantName.getText().toString());
+                mutant.put("power1", mutantSkill1.getText().toString());
+                mutant.put("power2", mutantSkill2.getText().toString());
+                mutant.put("power3", mutantSkill3.getText().toString());
+                mutant.put("user_id", MainActivity.userId);
+                return mutant;
+            }
+
+            /*
+             * Here we are passing image by renaming it with a unique name
+             * */
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                try {
+                    params.put("picture", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

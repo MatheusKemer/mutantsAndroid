@@ -36,6 +36,7 @@ public class Dashboard extends AppCompatActivity {
     }
 
     public void exit(View view){
-        finishAffinity();
+        finish();
+        System.exit(0);
     }
 }

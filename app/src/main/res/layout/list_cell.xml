@@ -3,9 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/mutantPicture"
+        android:layout_width="71dp"
+        android:layout_height="50dp"
+        android:contentDescription="mutant image" />
+
     <TextView
         android:id="@+id/mutantName"
-        android:layout_width="wrap_content"
+        android:layout_width="116dp"
         android:layout_height="50dp" />
 
 </LinearLayout>

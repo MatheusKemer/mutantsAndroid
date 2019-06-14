@@ -3,6 +3,8 @@ package com.example.mutantsvolley;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +25,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class ListMutants extends AppCompatActivity {
     public ArrayList<String> mutants = new ArrayList<String>();
+    public ArrayList<String> picsUrl = new ArrayList<String>();
+    public ArrayList<Bitmap> images = new ArrayList<Bitmap>();
     public JSONArray mutantsArray;
     ListView list;
     ProgressDialog progressDialog;
@@ -39,6 +45,7 @@ public class ListMutants extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_mutants);
         setTitle("Mutantes");
+        progressDialog = new ProgressDialog(this);
     }
 
     @Override
@@ -60,17 +67,20 @@ public class ListMutants extends AppCompatActivity {
     }
 
     public void populateTable(){
+        String picUrl;
         HashMap<String, String> applicationSettings = new HashMap<String,String>();
         for(int i=0; i<mutantsArray.length(); i++){
             try {
                 String name = mutantsArray.getJSONObject(i).getString("name");
                 mutants.add(name);
+                picUrl = mutantsArray.getJSONObject(i).getString("picture");
+                picsUrl.add(Objects.toString(picUrl, ""));
             } catch (JSONException e){
                 e.printStackTrace();
             }
         }
 
-        ListCell adapter = new ListCell(ListMutants.this, mutants);
+        ListCell adapter = new ListCell(ListMutants.this, mutants, picsUrl);
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -107,6 +117,7 @@ public class ListMutants extends AppCompatActivity {
 
     public void getMutants(){
         final String  REQUEST_TAG = "listMutants";
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Carregando mutantes...");
         progressDialog.show();
 
@@ -117,13 +128,13 @@ public class ListMutants extends AppCompatActivity {
                          Log.d("listMutants", response.toString());
                          mutantsArray = response;
                          populateTable();
-                         progressDialog.hide();
+                         progressDialog.dismiss();
                      }
                  }, new Response.ErrorListener() {
                 public void onErrorResponse(VolleyError error){
                     VolleyLog.d("listMutants", "Error: " + error.getMessage());
-                    displayAlert("Erro!", "Não foi possível conectar ao servidor!", "Entendi!");
-                    progressDialog.hide();
+                    displayAlert("Erro!", "Erro de conexão com servidor.", "Entendi!");
+                    progressDialog.dismiss();
                 }
          });
 

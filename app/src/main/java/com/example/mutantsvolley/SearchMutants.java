@@ -29,7 +29,7 @@ public class SearchMutants extends AppCompatActivity {
     ListView list;
     public JSONArray mutantsArray;
     EditText searchField;
-    ProgressDialog progressDialog;
+    ProgressDialog progressDialogForSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class SearchMutants extends AppCompatActivity {
 
         setTitle("Busca Mutante");
 
-        progressDialog = new ProgressDialog(this);
+        progressDialogForSearch = new ProgressDialog(this);
 
         list = findViewById(R.id.list);
 
@@ -79,8 +79,9 @@ public class SearchMutants extends AppCompatActivity {
 
     public void searchMutantsRequest(String query){
         final String  REQUEST_TAG = "searchMutants";
-        progressDialog.setMessage("Pesquisando mutantes...");
-        progressDialog.show();
+        progressDialogForSearch = new ProgressDialog(this);
+        progressDialogForSearch.setMessage("Pesquisando mutantes...");
+        progressDialogForSearch.show();
 
         final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(MainActivity.BASE_URL + "/buscar?q=" + query,
                 new Response.Listener<JSONArray>() {
@@ -89,12 +90,12 @@ public class SearchMutants extends AppCompatActivity {
                         Log.d("listMutants", response.toString());
                         mutantsArray = response;
                         populateTable();
-                        progressDialog.hide();
+                        progressDialogForSearch.dismiss();
                     }
                 }, new Response.ErrorListener() {
             public void onErrorResponse(VolleyError error){
                 VolleyLog.d("listMutants", "Error: " + error.getMessage());
-                progressDialog.hide();
+                progressDialogForSearch.dismiss();
             }
         });
 
