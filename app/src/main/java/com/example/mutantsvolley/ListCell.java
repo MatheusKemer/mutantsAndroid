@@ -54,7 +54,7 @@ public class ListCell extends ArrayAdapter<String> {
                 progressDialog.show();
                 String path = mutantsPicturesUrls.get(position);
                 URL url = new URL(MainActivity.BASE_URL + path);
-                System.out.println("URL DA IMAGEMMMM" + url.toString());
+                System.out.println("Url da imagem: " + url.toString());
                 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 mutantPicture.setImageBitmap(bmp);
                 progressDialog.dismiss();

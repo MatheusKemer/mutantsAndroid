@@ -42,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,7 @@ public class MutantForm extends AppCompatActivity {
     EditText mutantName, mutantSkill1, mutantSkill2, mutantSkill3;
     TextView userName;
     Button actionButton, deleteButton, btpic;
+    ImageView mutantPicture;
     ProgressDialog progressDialogForForm;
     private Uri fileUri;
     Uri selectedImage;
@@ -72,6 +74,7 @@ public class MutantForm extends AppCompatActivity {
         actionButton = findViewById(R.id.actionButton);
         deleteButton = findViewById(R.id.deleteButton);
         userName = findViewById(R.id.usernameField);
+        mutantPicture = findViewById(R.id.mutantPicture);
 
         btpic = findViewById(R.id.cpic);
         btpic.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +96,16 @@ public class MutantForm extends AppCompatActivity {
             userName.setText("Criado por: " + it.getStringExtra("userName").toString());
             userName.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
+            try {
+                String picturePath = it.getStringExtra("mutantPicture").toString();
+                URL url = new URL(MainActivity.BASE_URL + picturePath);
+                System.out.println("URL da imagem: " + url.toString());
+                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                mutantPicture.setImageBitmap(bmp);
+                mutantPicture.setVisibility(View.VISIBLE);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         } else {
             setTitle("Novo Mutante");
         }
@@ -227,7 +240,7 @@ public class MutantForm extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialogForForm.hide();
+                        progressDialogForForm.dismiss();
 
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));

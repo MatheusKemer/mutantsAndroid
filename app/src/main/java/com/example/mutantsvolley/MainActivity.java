@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        progressDialogForLogin.hide();
+                        progressDialogForLogin.dismiss();
                         try {
                             int responseStatus = Integer.valueOf(response.getString("code"));
                             if (responseStatus == 200) {
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                progressDialogForLogin.hide();
+                progressDialogForLogin.dismiss();
                 displayAlert("Erro no login", "Erro de conexão com o servidor.",
                         "Tentar Novamente", "");
             }

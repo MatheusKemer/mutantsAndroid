@@ -95,6 +95,7 @@ public class ListMutants extends AppCompatActivity {
                     it.putExtra("mutantPower2", mutant.getString("power2").toString());
                     it.putExtra("mutantPower3", mutant.getString("power3").toString());
                     it.putExtra("userName", mutant.getString("username").toString());
+                    it.putExtra("mutantPicture", mutant.getString("picture").toString());
                     it.putExtra("mutantId", mutant.getInt("id"));
                     startActivity(it);
                 } catch (JSONException e){

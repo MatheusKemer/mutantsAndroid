@@ -140,4 +140,11 @@
         android:textAlignment="center"
         android:visibility="invisible" />
 
+    <ImageView
+        android:id="@+id/mutantPicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        tools:srcCompat="@tools:sample/avatars[11]" />
+
 </LinearLayout>
