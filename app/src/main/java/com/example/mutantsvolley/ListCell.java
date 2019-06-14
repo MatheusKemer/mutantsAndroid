@@ -53,7 +53,7 @@ public class ListCell extends ArrayAdapter<String> {
                 progressDialog.setMessage("Carregando imagem do mutante " + name);
                 progressDialog.show();
                 String path = mutantsPicturesUrls.get(position);
-                URL url = new URL(MainActivity.BASE_URL + path);
+                URL url = new URL(Dashboard.BASE_URL + path);
                 System.out.println("Url da imagem: " + url.toString());
                 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 mutantPicture.setImageBitmap(bmp);

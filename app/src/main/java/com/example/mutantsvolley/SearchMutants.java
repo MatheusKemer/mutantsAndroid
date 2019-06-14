@@ -83,7 +83,7 @@ public class SearchMutants extends AppCompatActivity {
         progressDialogForSearch.setMessage("Pesquisando mutantes...");
         progressDialogForSearch.show();
 
-        final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(MainActivity.BASE_URL + "/buscar?q=" + query,
+        final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(Dashboard.BASE_URL + "/buscar?q=" + query,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {

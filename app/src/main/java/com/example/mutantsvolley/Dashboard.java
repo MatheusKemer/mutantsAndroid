@@ -8,6 +8,10 @@ import android.view.View;
 import android.widget.Button;
 
 public class Dashboard extends AppCompatActivity {
+    public static String userId;
+    public static final String BASE_URL = "https://905d1ed5.ngrok.io";
+    public static final String LOGIN_URL = BASE_URL + "/login";
+    public static final String GENERAL_MUTANT_URL = BASE_URL + "/mutants/";
     Button createMutant, listMutants, searchMutants, exit;
 
     @Override
@@ -19,6 +23,9 @@ public class Dashboard extends AppCompatActivity {
         listMutants = findViewById(R.id.list);
         searchMutants = findViewById(R.id.search);
         exit = findViewById(R.id.exit);
+
+        Intent it = getIntent();
+        Dashboard.userId = it.getStringExtra("userId");
     }
 
     public void createMutant(View view){

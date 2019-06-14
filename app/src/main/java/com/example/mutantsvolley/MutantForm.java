@@ -98,7 +98,7 @@ public class MutantForm extends AppCompatActivity {
             deleteButton.setVisibility(View.VISIBLE);
             try {
                 String picturePath = it.getStringExtra("mutantPicture").toString();
-                URL url = new URL(MainActivity.BASE_URL + picturePath);
+                URL url = new URL(Dashboard.BASE_URL + picturePath);
                 System.out.println("URL da imagem: " + url.toString());
                 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 mutantPicture.setImageBitmap(bmp);
@@ -144,7 +144,7 @@ public class MutantForm extends AppCompatActivity {
             mutant.put("power1", mutantSkill1.getText().toString());
             mutant.put("power2", mutantSkill2.getText().toString());
             mutant.put("power3", mutantSkill3.getText().toString());
-            mutant.put("user_id", MainActivity.userId);
+            mutant.put("user_id", Dashboard.userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -197,7 +197,7 @@ public class MutantForm extends AppCompatActivity {
         progressDialogForForm.setMessage("Salvando...");
         progressDialogForForm.show();
 
-        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL, params,
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.POST, Dashboard.GENERAL_MUTANT_URL, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -235,7 +235,7 @@ public class MutantForm extends AppCompatActivity {
         progressDialogForForm.show();
         Intent it = getIntent();
         String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
-        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.PUT, MainActivity.GENERAL_MUTANT_URL  + mutantId, params,
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.PUT, Dashboard.GENERAL_MUTANT_URL  + mutantId, params,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -271,7 +271,7 @@ public class MutantForm extends AppCompatActivity {
         progressDialogForForm.setMessage("Excluindo...");
         progressDialogForForm.show();
 
-        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.DELETE, MainActivity.GENERAL_MUTANT_URL  + mutantId, null,
+        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(Request.Method.DELETE, Dashboard.GENERAL_MUTANT_URL  + mutantId, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -363,7 +363,7 @@ public class MutantForm extends AppCompatActivity {
         progressDialogForForm.setMessage("Salvando Mutante...");
         progressDialogForForm.show();
         //our custom volley request
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, MainActivity.GENERAL_MUTANT_URL,
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, Dashboard.GENERAL_MUTANT_URL,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
@@ -405,7 +405,7 @@ public class MutantForm extends AppCompatActivity {
                 mutant.put("power1", mutantSkill1.getText().toString());
                 mutant.put("power2", mutantSkill2.getText().toString());
                 mutant.put("power3", mutantSkill3.getText().toString());
-                mutant.put("user_id", MainActivity.userId);
+                mutant.put("user_id", Dashboard.userId);
                 return mutant;
             }
 
@@ -436,7 +436,7 @@ public class MutantForm extends AppCompatActivity {
 
         Intent it = getIntent();
         String mutantId = String.valueOf(it.getIntExtra("mutantId", 0));
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.PUT, MainActivity.GENERAL_MUTANT_URL  + mutantId,
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.PUT, Dashboard.GENERAL_MUTANT_URL  + mutantId,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
@@ -478,7 +478,7 @@ public class MutantForm extends AppCompatActivity {
                 mutant.put("power1", mutantSkill1.getText().toString());
                 mutant.put("power2", mutantSkill2.getText().toString());
                 mutant.put("power3", mutantSkill3.getText().toString());
-                mutant.put("user_id", MainActivity.userId);
+                mutant.put("user_id", Dashboard.userId);
                 return mutant;
             }
 

@@ -122,7 +122,7 @@ public class ListMutants extends AppCompatActivity {
         progressDialog.setMessage("Carregando mutantes...");
         progressDialog.show();
 
-         final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(MainActivity.GENERAL_MUTANT_URL,
+         final JsonArrayRequest jsonArrayReq = new JsonArrayRequest(Dashboard.GENERAL_MUTANT_URL,
                  new Response.Listener<JSONArray>() {
                      @Override
                      public void onResponse(JSONArray response) {

@@ -21,18 +21,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
-    public static final String BASE_URL = "https://905d1ed5.ngrok.io";
-    private static final String LOGIN_URL = BASE_URL + "/login";
-    public static final String GENERAL_MUTANT_URL = BASE_URL + "/mutants/";
-    public static String userId;
-
+public class MainActivity extends AppCompatActivity{
     ProgressDialog progressDialogForLogin;
     private static final String TAG = "MainActivity";
     private Button loginButton;
-    private View showDialogView;
-    private TextView outputTextView;
-    private ImageView outputImageView;
     private EditText usernameValue, passwordValue;
 
     @Override
@@ -51,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String paramsUrl = LOGIN_URL + "?login=" + usernameValue.getText().toString() +
+                String paramsUrl = Dashboard.LOGIN_URL + "?login=" + usernameValue.getText().toString() +
                         "&password=" + passwordValue.getText().toString();
                 doLoginRequest(paramsUrl);
             }
@@ -82,9 +74,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToDashboard(String userId){
-        MainActivity.userId = userId;
+        Dashboard.userId = userId;
 
         Intent intent = new Intent(this, Dashboard.class);
+        intent.putExtra("userId", userId);
         startActivity(intent);
 
         finish();
@@ -92,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void doLoginRequest(String url){
         String  REQUEST_TAG = "loginRequest";
-        progressDialogForLogin.setMessage("Loading...");
+        progressDialogForLogin.setMessage("Acessando...");
         progressDialogForLogin.show();
 
         JsonObjectRequest jsonObjectReq = new JsonObjectRequest(url, null,
@@ -105,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                             int responseStatus = Integer.valueOf(response.getString("code"));
                             if (responseStatus == 200) {
                                 displaySuccessAlert("Logado com sucesso!", "Bem vindo, " + response.getString("username"),
-                                        "Continuar", response.getString("id"));
+                                        "Continuar", response.getString("id").toString());
                             } else {
                                 displayAlert("Erro no login", "Usuário ou senha incorretos",
                                         "Tentar Novamente", "");
